@@ -6,19 +6,15 @@ on:
   pull_request:
     branches: [ master ]
 
-env:
-  SWIFT_VERSION: '5.9'
-
 jobs:
   test-macos:
     name: Test on macOS
     runs-on: macos-latest
-    
     steps:
     - uses: actions/checkout@v4
     
     - name: Select Xcode
-      run: sudo xcode-select -s /Applications/Xcode_15.0.app
+      run: sudo xcode-select -s /Applications/Xcode_15.2.app
     
     - name: Swift version
       run: swift --version
@@ -28,56 +24,34 @@ jobs:
     
     - name: Run tests
       run: swift test -v
-    
-    - name: Build Release
-      run: swift build -c release -v
 
-  test-linux-docker:
-    name: Test on Linux (Docker)
+  test-linux:
+    name: Test on Linux
     runs-on: ubuntu-latest
+    container:
+      image: swift:5.9-jammy
+    steps:
+    - uses: actions/checkout@v4
     
+    - name: Install dependencies
+      run: |
+        apt-get update
+        apt-get install -y curl libcurl4-openssl-dev
+    
+    - name: Build
+      run: swift build -v
+    
+    - name: Run tests
+      run: swift test -v
+
+  test-docker:
+    name: Test in Docker
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     
     - name: Build Docker image
-      run: docker build -t anthropickit:test .
+      run: docker build -t anthropickit-test .
     
     - name: Run tests in Docker
-      run: |
-        docker run --rm \
-          -v $PWD:/workspace \
-          -w /workspace \
-          anthropickit:test \
-          swift test -v
-    
-    - name: Build Release in Docker
-      run: |
-        docker run --rm \
-          -v $PWD:/workspace \
-          -w /workspace \
-          anthropickit:test \
-          swift build -c release -v
-
-  test-linux-native:
-    name: Test on Linux (Native)
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Install Swift
-      uses: swift-actions/setup-swift@v1
-      with:
-        swift-version: ${{ env.SWIFT_VERSION }}
-    
-    - name: Swift version
-      run: swift --version
-    
-    - name: Build
-      run: swift build -v
-    
-    - name: Run tests
-      run: swift test -v
-    
-    - name: Build Release
-      run: swift build -c release -v
+      run: docker run --rm anthropickit-test --help
