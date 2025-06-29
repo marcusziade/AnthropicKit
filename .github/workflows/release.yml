@@ -1,0 +1,82 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+  build-macos:
+    name: Build macOS Binary
+    needs: create-release
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Select Xcode
+      run: sudo xcode-select -s /Applications/Xcode_15.0.app
+    
+    - name: Build Release Binary
+      run: |
+        swift build -c release
+        cp .build/release/anthropic-cli ./anthropic-cli-macos
+        chmod +x anthropic-cli-macos
+        tar -czf anthropic-cli-macos.tar.gz anthropic-cli-macos
+    
+    - name: Upload macOS Binary
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./anthropic-cli-macos.tar.gz
+        asset_name: anthropic-cli-macos.tar.gz
+        asset_content_type: application/gzip
+
+  build-linux:
+    name: Build Linux Binary
+    needs: create-release
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Build Linux Binary in Docker
+      run: |
+        docker build -t anthropickit:release .
+        docker create --name extract anthropickit:release
+        docker cp extract:/app/anthropic-cli ./anthropic-cli-linux
+        docker rm extract
+        chmod +x anthropic-cli-linux
+        tar -czf anthropic-cli-linux.tar.gz anthropic-cli-linux
+    
+    - name: Upload Linux Binary
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./anthropic-cli-linux.tar.gz
+        asset_name: anthropic-cli-linux.tar.gz
+        asset_content_type: application/gzip
