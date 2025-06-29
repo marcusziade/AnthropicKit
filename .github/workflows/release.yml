@@ -11,22 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
     
     steps:
     - uses: actions/checkout@v4
     
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: ${{ github.ref_name }}
-        draft: false
-        prerelease: false
+      run: |
+        gh release create "${{ github.ref_name }}" \
+          --title "${{ github.ref_name }}" \
+          --notes "Release ${{ github.ref_name }}"
 
   build-macos:
     name: Build macOS Binary
@@ -49,14 +45,12 @@ jobs:
         tar -czf anthropic-cli-macos.tar.gz anthropic-cli-macos
     
     - name: Upload macOS Binary
-      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ needs.create-release.outputs.upload_url }}
-        asset_path: ./anthropic-cli-macos.tar.gz
-        asset_name: anthropic-cli-macos.tar.gz
-        asset_content_type: application/gzip
+      run: |
+        gh release upload "${{ github.ref_name }}" \
+          ./anthropic-cli-macos.tar.gz \
+          --clobber
 
   build-linux:
     name: Build Linux Binary
@@ -78,11 +72,9 @@ jobs:
         tar -czf anthropic-cli-linux.tar.gz anthropic-cli-linux
     
     - name: Upload Linux Binary
-      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ needs.create-release.outputs.upload_url }}
-        asset_path: ./anthropic-cli-linux.tar.gz
-        asset_name: anthropic-cli-linux.tar.gz
-        asset_content_type: application/gzip
+      run: |
+        gh release upload "${{ github.ref_name }}" \
+          ./anthropic-cli-linux.tar.gz \
+          --clobber
