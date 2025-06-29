@@ -1,0 +1,11 @@
+.build/
+.swiftpm/
+.git/
+*.xcodeproj
+DerivedData/
+.DS_Store
+*.swp
+*.swo
+*~
+.env
+.env.local
