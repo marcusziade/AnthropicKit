@@ -224,7 +224,7 @@ let htmlContent = """
                 <p class="subtitle">Swift SDK for Claude API - Build intelligent applications with ease</p>
                 <div class="buttons">
                     <a href="documentation/anthropickit/" class="button">View Documentation</a>
-                    <a href="https://github.com/your-username/AnthropicKit" class="button secondary">GitHub</a>
+                    <a href="documentation/anthropickit/tutorials/anthropickit-tutorials" class="button secondary">Tutorials</a>
                 </div>
             </div>
         </div>
@@ -288,7 +288,7 @@ let htmlContent = """
                 <p style="margin-top: 10px;">
                     <a href="documentation/anthropickit/">Documentation</a> • 
                     <a href="documentation/anthropickit/tutorials/anthropickit-tutorials">Tutorials</a> • 
-                    <a href="https://github.com/your-username/AnthropicKit">GitHub</a>
+                    <a href="https://github.com/marcusziade/AnthropicKit">GitHub</a>
                 </p>
             </div>
         </footer>
