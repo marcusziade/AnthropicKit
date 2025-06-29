@@ -218,36 +218,13 @@ let htmlContent = """
         </style>
     </head>
     <body>
-        <script>
-            // Tutorial URL fallback handler
-            document.addEventListener('DOMContentLoaded', function() {
-                const tutorialLinks = document.querySelectorAll('a[href*="tutorials"]');
-                tutorialLinks.forEach(link => {
-                    link.addEventListener('click', function(e) {
-                        const href = this.getAttribute('href');
-                        // Try multiple possible tutorial paths
-                        const possiblePaths = [
-                            href,
-                            'documentation/anthropickit/tutorials/',
-                            'documentation/anthropickit/tutorials/anthropickit/',
-                            'documentation/anthropickit/tutorials/anthropickit-tutorials/',
-                            'tutorials/anthropickit-tutorials/',
-                            'documentation/anthropickit/tutorials/table-of-contents/'
-                        ];
-                        
-                        // Log for debugging
-                        console.log('Attempting to navigate to tutorials at:', href);
-                    });
-                });
-            });
-        </script>
         <div class="hero">
             <div class="container">
                 <h1>AnthropicKit</h1>
                 <p class="subtitle">Swift SDK for Claude API - Build intelligent applications with ease</p>
                 <div class="buttons">
                     <a href="documentation/anthropickit/" class="button">View Documentation</a>
-                    <a href="documentation/anthropickit/tutorials" class="button secondary">Tutorials</a>
+                    <a href="tutorials/anthropickit-tutorials" class="button secondary">Tutorials</a>
                 </div>
             </div>
         </div>
@@ -310,7 +287,7 @@ let htmlContent = """
             <div class="container">
                 <p style="margin-top: 10px;">
                     <a href="documentation/anthropickit/">Documentation</a> • 
-                    <a href="documentation/anthropickit/tutorials">Tutorials</a> • 
+                    <a href="tutorials/anthropickit-tutorials">Tutorials</a> • 
                     <a href="https://github.com/marcusziade/AnthropicKit">GitHub</a>
                 </p>
             </div>
