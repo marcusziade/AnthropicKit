@@ -23,7 +23,7 @@ jobs:
       run: swift build -v
     
     - name: Run tests
-      run: swift test -v
+      run: swift test -v --filter AnthropicKitTests
 
   test-linux:
     name: Test on Linux
@@ -42,7 +42,7 @@ jobs:
       run: swift build -v
     
     - name: Run tests
-      run: swift test -v
+      run: swift test -v --filter AnthropicKitTests
 
   test-docker:
     name: Test in Docker

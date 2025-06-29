@@ -18,7 +18,10 @@ final class IntegrationTests: XCTestCase {
     }
     
     func testBasicMessage() async throws {
-        let client = AnthropicAPI.fromEnvironment()!
+        guard let client = AnthropicAPI.fromEnvironment() else {
+            XCTFail("Failed to create client from environment")
+            return
+        }
         
         let request = MessageRequest(
             model: "claude-opus-4-20250514",
