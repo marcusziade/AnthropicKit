@@ -171,7 +171,7 @@ public enum ToolResultContent: Codable, Equatable, Sendable {
 }
 
 /// A type-erased codable value.
-public struct AnyCodable: Codable, Equatable, Sendable {
+public struct AnyCodable: Codable, Equatable, @unchecked Sendable {
     public let value: Any
     
     public init(_ value: Any) {

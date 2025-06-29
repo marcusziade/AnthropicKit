@@ -19,18 +19,18 @@ AnthropicKit is a modern Swift SDK for interacting with Anthropic's Claude API. 
 ### Getting Started
 
 - <doc:GettingStarted>
-- <doc:Tutorials/AnthropicKit-Tutorials>
 
 ### Essentials
 
-- ``AnthropicClient``
+- ``AnthropicAPI``
 - ``Message``
 - ``Model``
-- ``StreamingResponse``
+- ``MessageResponse``
+- ``StreamEvent``
 
 ### Advanced Features
 
-- ``Tool``
-- ``ToolResult``
-- ``SystemPrompt``
-- ``MessageOptions``
+- ``MessageRequest``
+- ``ToolResultContent``
+- ``APIConfiguration``
+- ``AnthropicError``
