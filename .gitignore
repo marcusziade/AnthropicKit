@@ -1,0 +1,41 @@
+# Xcode
+.build/
+DerivedData/
+*.xcodeproj
+*.xcworkspace
+*.playground
+
+# Swift Package Manager
+.swiftpm/
+Package.resolved
+
+# macOS
+.DS_Store
+
+# Linux
+*.so
+*.dylib
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+
+# Test Coverage
+.coverage/
+*.lcov
+
+# Documentation
+docs/
+.docc-build/
+
+# Binaries
+anthropic-cli
+anthropic-cli-macos
+anthropic-cli-linux
