@@ -6,8 +6,6 @@
     @Chapter(name: "Building a Smart Assistant") {
         Create a simple but powerful AI assistant that can help users with various tasks using Claude's natural language understanding.
         
-        @Image(source: "")
-        
         @TutorialReference(tutorial: "doc:BuildingSmartAssistant")
     }
 }

@@ -56,6 +56,18 @@ jobs:
     - name: Create Landing Page
       run: |
         swift Scripts/create_docs_index.swift
+        
+    - name: List Generated Structure
+      run: |
+        echo "=== Generated documentation structure ==="
+        find ./docs -type f -name "*.html" | grep -E "(tutorial|Tutorial)" | sort || echo "No tutorial files found"
+        echo "=== Top-level directories ==="
+        ls -la ./docs/
+        echo "=== Documentation directory ==="
+        ls -la ./docs/documentation/ || echo "No documentation directory"
+        echo "=== Checking for tutorials directory ==="
+        ls -la ./docs/tutorials/ || echo "No tutorials directory at root"
+        ls -la ./docs/documentation/anthropickit/tutorials/ || echo "No tutorials under documentation"
 
     - name: Upload Pages Artifact
       uses: actions/upload-pages-artifact@v3
