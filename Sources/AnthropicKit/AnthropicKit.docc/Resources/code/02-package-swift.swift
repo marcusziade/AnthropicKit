@@ -7,7 +7,7 @@ let package = Package(
         .macOS(.v12)
     ],
     dependencies: [
-        .package(url: "https://github.com/your-username/AnthropicKit.git", from: "1.0.0")
+        .package(url: "https://github.com/marcusziade/AnthropicKit.git", from: "1.0.0")
     ],
     targets: [
         .executableTarget(
@@ -15,3 +15,4 @@ let package = Package(
             dependencies: ["AnthropicKit"])
     ]
 )
+
