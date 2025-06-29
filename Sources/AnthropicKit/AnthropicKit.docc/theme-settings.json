@@ -1,0 +1,36 @@
+{
+  "theme": {
+    "color": {
+      "standard-red": "hsl(24, 49%, 65%)",
+      "standard-orange": "hsl(30, 80%, 88%)", 
+      "standard-yellow": "hsl(30, 31%, 40%)",
+      "standard-green": "hsl(24, 49%, 65%)",
+      "standard-blue": "hsl(24, 31%, 25%)",
+      "standard-purple": "hsl(30, 80%, 95%)",
+      "standard-gray": "hsl(30, 10%, 30%)",
+      "documentation-intro-fill": "radial-gradient(circle at top, hsl(24, 49%, 65%) 30%, hsl(30, 31%, 40%) 100%)",
+      "documentation-intro-accent": "hsl(24, 49%, 75%)",
+      "tutorial-background": "hsl(30, 80%, 98%)",
+      "launch-background": "hsl(24, 49%, 65%)",
+      "launch-accent": "hsl(30, 80%, 88%)"
+    },
+    "aside": {
+      "note": {
+        "background": "hsl(30, 80%, 95%)",
+        "border": "hsl(24, 49%, 65%)"
+      },
+      "tip": {
+        "background": "hsl(30, 80%, 95%)",
+        "border": "hsl(24, 49%, 65%)"
+      },
+      "important": {
+        "background": "hsl(30, 80%, 88%)",
+        "border": "hsl(30, 31%, 40%)"
+      },
+      "experiment": {
+        "background": "hsl(30, 80%, 95%)",
+        "border": "hsl(24, 49%, 65%)"
+      }
+    }
+  }
+}

@@ -1,0 +1,187 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Building a Smart Assistant") {
+        Create an AI-powered assistant that can understand natural language and provide helpful responses using Claude.
+        
+        @Image(source: "tutorial-intro.png", alt: "Smart Assistant Preview")
+    }
+    
+    @Section(title: "Set Up Your Project") {
+        @ContentAndMedia {
+            Let's start by creating a new Swift project and adding AnthropicKit as a dependency.
+            
+            @Image(source: "setup-project.png", alt: "Project Setup")
+        }
+        
+        @Steps {
+            @Step {
+                Create a new Swift executable package.
+                
+                @Code(name: "Terminal", file: "01-create-package.sh")
+            }
+            
+            @Step {
+                Add AnthropicKit to your Package.swift dependencies.
+                
+                @Code(name: "Package.swift", file: "02-package-swift.swift")
+            }
+            
+            @Step {
+                Create the main application file structure.
+                
+                @Code(name: "main.swift", file: "03-main-empty.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Initialize the Client") {
+        @ContentAndMedia {
+            Configure the AnthropicClient with your API key to start making requests to Claude.
+            
+            @Image(source: "client-setup.png", alt: "Client Configuration")
+        }
+        
+        @Steps {
+            @Step {
+                Import AnthropicKit and create a client instance.
+                
+                @Code(name: "main.swift", file: "04-import-client.swift")
+            }
+            
+            @Step {
+                Add error handling for the async context.
+                
+                @Code(name: "main.swift", file: "05-async-main.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Create Your First Conversation") {
+        @ContentAndMedia {
+            Now let's create a simple conversation with Claude and display the response.
+            
+            @Image(source: "first-conversation.png", alt: "First Conversation")
+        }
+        
+        @Steps {
+            @Step {
+                Create a message and send it to Claude.
+                
+                @Code(name: "main.swift", file: "06-send-message.swift")
+            }
+            
+            @Step {
+                Handle the response and extract the text content.
+                
+                @Code(name: "main.swift", file: "07-handle-response.swift")
+            }
+            
+            @Step {
+                Add a conversation loop for interactive chat.
+                
+                @Code(name: "main.swift", file: "08-conversation-loop.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Add Streaming Responses") {
+        @ContentAndMedia {
+            Enhance the user experience by streaming responses in real-time as Claude generates them.
+            
+            @Image(source: "streaming-responses.png", alt: "Streaming Responses")
+        }
+        
+        @Steps {
+            @Step {
+                Modify the message creation to use streaming.
+                
+                @Code(name: "main.swift", file: "09-streaming-setup.swift")
+            }
+            
+            @Step {
+                Process streaming chunks as they arrive.
+                
+                @Code(name: "main.swift", file: "10-process-stream.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Add System Instructions") {
+        @ContentAndMedia {
+            Give your assistant a personality and specific capabilities by adding system instructions.
+            
+            @Image(source: "system-instructions.png", alt: "System Instructions")
+        }
+        
+        @Steps {
+            @Step {
+                Define system instructions for your assistant.
+                
+                @Code(name: "main.swift", file: "11-system-prompt.swift")
+            }
+            
+            @Step {
+                Create a complete smart assistant with personality.
+                
+                @Code(name: "main.swift", file: "12-final-assistant.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the primary purpose of system instructions in Claude?
+            
+            @Choice(isCorrect: false) {
+                To increase the response speed
+                
+                @Justification(reaction: "Try again!") {
+                    System instructions don't affect response speed.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                To define the assistant's behavior and capabilities
+                
+                @Justification(reaction: "Correct!") {
+                    System instructions shape how Claude responds and what role it takes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                To reduce API costs
+                
+                @Justification(reaction: "Not quite!") {
+                    System instructions actually add tokens to each request.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What's the benefit of using streaming responses?
+            
+            @Choice(isCorrect: true) {
+                Better user experience with real-time feedback
+                
+                @Justification(reaction: "Exactly!") {
+                    Streaming lets users see responses as they're generated.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Lower API costs
+                
+                @Justification(reaction: "Try again!") {
+                    Streaming doesn't affect the cost of API calls.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                More accurate responses
+                
+                @Justification(reaction: "Not quite!") {
+                    Streaming doesn't change the quality of responses.
+                }
+            }
+        }
+    }
+}
