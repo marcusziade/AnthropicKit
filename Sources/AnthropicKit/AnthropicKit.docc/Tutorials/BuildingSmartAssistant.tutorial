@@ -1,15 +1,11 @@
 @Tutorial(time: 20) {
     @Intro(title: "Building a Smart Assistant") {
         Create an AI-powered assistant that can understand natural language and provide helpful responses using Claude.
-        
-        @Image(source: "tutorial-intro.png", alt: "Smart Assistant Preview")
     }
     
     @Section(title: "Set Up Your Project") {
         @ContentAndMedia {
             Let's start by creating a new Swift project and adding AnthropicKit as a dependency.
-            
-            @Image(source: "setup-project.png", alt: "Project Setup")
         }
         
         @Steps {
@@ -36,8 +32,6 @@
     @Section(title: "Initialize the Client") {
         @ContentAndMedia {
             Configure the AnthropicClient with your API key to start making requests to Claude.
-            
-            @Image(source: "client-setup.png", alt: "Client Configuration")
         }
         
         @Steps {
@@ -58,8 +52,6 @@
     @Section(title: "Create Your First Conversation") {
         @ContentAndMedia {
             Now let's create a simple conversation with Claude and display the response.
-            
-            @Image(source: "first-conversation.png", alt: "First Conversation")
         }
         
         @Steps {
@@ -86,8 +78,6 @@
     @Section(title: "Add Streaming Responses") {
         @ContentAndMedia {
             Enhance the user experience by streaming responses in real-time as Claude generates them.
-            
-            @Image(source: "streaming-responses.png", alt: "Streaming Responses")
         }
         
         @Steps {
@@ -108,8 +98,6 @@
     @Section(title: "Add System Instructions") {
         @ContentAndMedia {
             Give your assistant a personality and specific capabilities by adding system instructions.
-            
-            @Image(source: "system-instructions.png", alt: "System Instructions")
         }
         
         @Steps {
