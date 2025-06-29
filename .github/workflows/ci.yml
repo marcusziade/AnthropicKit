@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 env:
   SWIFT_VERSION: '5.9'
@@ -32,7 +32,7 @@ jobs:
     - name: Build Release
       run: swift build -c release -v
 
-  test-linux-docker:
+  test-linux:
     name: Test on Linux (Docker)
     runs-on: ubuntu-latest
     
@@ -47,16 +47,8 @@ jobs:
         docker run --rm \
           -v $PWD:/workspace \
           -w /workspace \
-          anthropickit:test \
+          swift:${{ env.SWIFT_VERSION }}-jammy \
           swift test -v
-    
-    - name: Build Release in Docker
-      run: |
-        docker run --rm \
-          -v $PWD:/workspace \
-          -w /workspace \
-          anthropickit:test \
-          swift build -c release -v
 
   test-linux-native:
     name: Test on Linux (Native)
@@ -81,3 +73,25 @@ jobs:
     
     - name: Build Release
       run: swift build -c release -v
+
+  documentation:
+    name: Build Documentation
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Select Xcode
+      run: sudo xcode-select -s /Applications/Xcode_15.0.app
+    
+    - name: Build Documentation
+      run: |
+        swift package generate-documentation \
+          --target AnthropicKit \
+          --output-path ./docs
+    
+    - name: Upload Documentation
+      uses: actions/upload-artifact@v3
+      with:
+        name: documentation
+        path: ./docs

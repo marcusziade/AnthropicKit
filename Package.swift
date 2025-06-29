@@ -4,11 +4,7 @@ import PackageDescription
 let package = Package(
     name: "AnthropicKit",
     platforms: [
-        .macOS(.v13),
-        .iOS(.v16),
-        .tvOS(.v16),
-        .watchOS(.v9),
-        .visionOS(.v1)
+        .macOS(.v12)
     ],
     products: [
         .library(

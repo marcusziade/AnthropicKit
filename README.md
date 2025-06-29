@@ -1,7 +1,9 @@
 # AnthropicKit
 
 [![Swift](https://img.shields.io/badge/Swift-5.9-orange.svg)](https://swift.org)
-[![Platforms](https://img.shields.io/badge/Platforms-macOS%20%7C%20iOS%20%7C%20tvOS%20%7C%20watchOS%20%7C%20visionOS%20%7C%20Linux-blue)](https://swift.org)
+[![macOS](https://img.shields.io/badge/macOS-12.0+-blue.svg)](https://developer.apple.com/macos/)
+[![Linux](https://img.shields.io/badge/Linux-Ubuntu-green.svg)](https://ubuntu.com)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com)
 [![CI](https://github.com/marcusziade/AnthropicKit/workflows/CI/badge.svg)](https://github.com/marcusziade/AnthropicKit/actions)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -45,7 +47,7 @@ for try await event in stream {
 ## Features
 
 - **Full API Coverage**: Messages, streaming, batches, files, models, organizations
-- **Cross-Platform**: macOS 13+, iOS 16+, tvOS 16+, watchOS 9+, visionOS 1+, Linux
+- **Cross-Platform**: Native macOS support, full Linux support with cURL-based streaming
 - **Type-Safe**: Leverages Swift's type system
 - **Async/Await**: Modern Swift concurrency
 - **CLI Tool**: Comprehensive testing tool included
