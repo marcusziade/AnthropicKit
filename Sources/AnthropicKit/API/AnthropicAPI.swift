@@ -3,15 +3,99 @@ import Foundation
 @preconcurrency import FoundationNetworking
 #endif
 
-/// The main Anthropic API client.
+/// The main client for interacting with Anthropic's Claude API.
+///
+/// `AnthropicAPI` provides a comprehensive, type-safe interface to all Claude API features
+/// including message generation, streaming responses, and tool use. It handles authentication,
+/// request serialization, response parsing, and error handling automatically.
+///
+/// ## Creating a Client
+///
+/// ```swift
+/// // With API key
+/// let client = AnthropicAPI(apiKey: "your-api-key")
+///
+/// // With custom configuration
+/// let config = APIConfiguration(
+///     apiKey: "your-api-key",
+///     baseURL: URL(string: "https://api.anthropic.com")!,
+///     headers: ["Custom-Header": "Value"]
+/// )
+/// let client = AnthropicAPI(configuration: config)
+///
+/// // From environment variables
+/// if let client = AnthropicAPI.fromEnvironment() {
+///     // Use client
+/// }
+/// ```
+///
+/// ## Basic Usage
+///
+/// ```swift
+/// // Simple message
+/// let response = try await client.createMessage(
+///     MessageRequest(
+///         model: "claude-opus-4-20250514",
+///         maxTokens: 1024,
+///         messages: [Message.text("Hello!", role: .user)]
+///     )
+/// )
+///
+/// // Streaming response
+/// let stream = try await client.streamMessage(request)
+/// for await event in stream {
+///     switch event {
+///     case .delta(let delta):
+///         print(delta.text ?? "", terminator: "")
+///     default:
+///         break
+///     }
+/// }
+/// ```
+///
+/// ## Thread Safety
+///
+/// `AnthropicAPI` is thread-safe and can be shared across multiple concurrent operations.
+/// It's recommended to create a single instance and reuse it throughout your application.
+///
+/// ## Error Handling
+///
+/// All methods throw ``AnthropicError`` which provides detailed error information:
+/// - API errors (rate limits, invalid requests)
+/// - Network errors (connectivity issues)
+/// - Decoding errors (unexpected response format)
+///
+/// ## Rate Limiting
+///
+/// The client automatically includes retry logic for transient failures and respects
+/// rate limit headers from the API.
 public final class AnthropicAPI: AnthropicAPIProtocol {
     private let configuration: APIConfiguration
     private let httpClient: HTTPClient
     private let encoder: JSONEncoder
     private let decoder: JSONDecoder
     
-    /// Creates a new Anthropic API client.
-    /// - Parameter configuration: The API configuration.
+    /// Creates a new Anthropic API client with custom configuration.
+    ///
+    /// Use this initializer when you need fine-grained control over the client configuration,
+    /// such as custom headers, base URL, or timeout settings.
+    ///
+    /// - Parameter configuration: The API configuration containing authentication and connection settings.
+    ///
+    /// ## Example
+    ///
+    /// ```swift
+    /// let config = APIConfiguration(
+    ///     apiKey: ProcessInfo.processInfo.environment["ANTHROPIC_API_KEY"] ?? "",
+    ///     baseURL: URL(string: "https://api.anthropic.com")!,
+    ///     headers: [
+    ///         "X-Custom-Header": "CustomValue",
+    ///         "X-Request-ID": UUID().uuidString
+    ///     ],
+    ///     timeout: 120 // 2 minutes
+    /// )
+    /// let client = AnthropicAPI(configuration: config)
+    /// ```
     public init(configuration: APIConfiguration) {
         self.configuration = configuration
         self.httpClient = createHTTPClient()
@@ -60,13 +144,55 @@ public final class AnthropicAPI: AnthropicAPIProtocol {
     }
     
     /// Creates a new API client with the given API key.
-    /// - Parameter apiKey: The API key for authentication.
+    ///
+    /// This is the simplest way to create a client. It uses default configuration
+    /// with the official Anthropic API endpoint.
+    ///
+    /// - Parameter apiKey: The API key for authentication. Get your key from https://console.anthropic.com/
+    ///
+    /// ## Example
+    ///
+    /// ```swift
+    /// let client = AnthropicAPI(apiKey: "sk-ant-...")
+    ///
+    /// // Using from environment variable (recommended)
+    /// guard let apiKey = ProcessInfo.processInfo.environment["ANTHROPIC_API_KEY"] else {
+    ///     fatalError("Missing ANTHROPIC_API_KEY environment variable")
+    /// }
+    /// let client = AnthropicAPI(apiKey: apiKey)
+    /// ```
+    ///
+    /// - Important: Never hardcode API keys in your source code. Use environment variables or secure storage.
     public convenience init(apiKey: String) {
         self.init(configuration: APIConfiguration(apiKey: apiKey))
     }
     
     /// Creates a new API client from environment variables.
-    /// - Returns: An API client if the required environment variables are set.
+    ///
+    /// This method looks for the following environment variables:
+    /// - `ANTHROPIC_API_KEY`: Required. Your Anthropic API key.
+    /// - `ANTHROPIC_BASE_URL`: Optional. Custom API endpoint (defaults to https://api.anthropic.com)
+    ///
+    /// - Returns: An API client if the required environment variables are set, nil otherwise.
+    ///
+    /// ## Example
+    ///
+    /// ```swift
+    /// // Set environment variable before running:
+    /// // export ANTHROPIC_API_KEY="sk-ant-..."
+    ///
+    /// if let client = AnthropicAPI.fromEnvironment() {
+    ///     // Use client
+    /// } else {
+    ///     print("Please set ANTHROPIC_API_KEY environment variable")
+    /// }
+    /// ```
+    ///
+    /// ## Setting Environment Variables
+    ///
+    /// - **Terminal**: `export ANTHROPIC_API_KEY="your-key"`
+    /// - **Xcode**: Edit scheme > Run > Environment Variables
+    /// - **Swift Package**: Use `ProcessInfo.processInfo.environment`
     public static func fromEnvironment() -> AnthropicAPI? {
         guard let config = APIConfiguration.fromEnvironment() else {
             return nil
@@ -76,6 +202,57 @@ public final class AnthropicAPI: AnthropicAPIProtocol {
     
     // MARK: - Messages API
     
+    /// Sends a message to Claude and waits for the complete response.
+    ///
+    /// Use this method for standard request-response interactions where you want
+    /// to receive the complete response before proceeding.
+    ///
+    /// - Parameter request: The message request containing the conversation and parameters.
+    /// - Returns: The complete response from Claude.
+    /// - Throws: ``AnthropicError`` if the request fails.
+    ///
+    /// ## Example
+    ///
+    /// ```swift
+    /// // Simple question
+    /// let response = try await client.createMessage(
+    ///     MessageRequest(
+    ///         model: "claude-opus-4-20250514",
+    ///         maxTokens: 1024,
+    ///         messages: [Message.text("What is quantum computing?", role: .user)]
+    ///     )
+    /// )
+    /// print(response.content.first?.text ?? "")
+    ///
+    /// // Multi-turn conversation
+    /// var messages: [Message] = []
+    /// messages.append(Message.text("Tell me about Paris", role: .user))
+    ///
+    /// let response1 = try await client.createMessage(
+    ///     MessageRequest(model: "claude-opus-4-20250514", maxTokens: 1024, messages: messages)
+    /// )
+    /// messages.append(response1.asMessage!)
+    ///
+    /// messages.append(Message.text("What about its museums?", role: .user))
+    /// let response2 = try await client.createMessage(
+    ///     MessageRequest(model: "claude-opus-4-20250514", maxTokens: 1024, messages: messages)
+    /// )
+    /// ```
+    ///
+    /// ## Error Handling
+    ///
+    /// ```swift
+    /// do {
+    ///     let response = try await client.createMessage(request)
+    /// } catch let error as AnthropicError {
+    ///     switch error {
+    ///     case .apiError(let apiError) where apiError.type == "rate_limit_error":
+    ///         // Handle rate limiting
+    ///     default:
+    ///         // Handle other errors
+    ///     }
+    /// }
+    /// ```
     public func createMessage(_ request: MessageRequest) async throws -> MessageResponse {
         let url = configuration.baseURL.appendingPathComponent("/v1/messages")
         var modifiedRequest = request
@@ -103,6 +280,62 @@ public final class AnthropicAPI: AnthropicAPIProtocol {
         return try decoder.decode(MessageResponse.self, from: data)
     }
     
+    /// Sends a message to Claude and streams the response in real-time.
+    ///
+    /// Use this method for interactive applications where you want to display
+    /// Claude's response as it's being generated. The stream emits events
+    /// for each chunk of the response.
+    ///
+    /// - Parameter request: The message request. The `stream` parameter will be set to true automatically.
+    /// - Returns: An async stream of ``StreamEvent`` objects.
+    /// - Throws: ``AnthropicError`` if the request fails to initiate.
+    ///
+    /// ## Example
+    ///
+    /// ```swift
+    /// // Basic streaming
+    /// let stream = try await client.createStreamingMessage(request)
+    /// for await event in stream {
+    ///     switch event {
+    ///     case .start(let message):
+    ///         print("Started streaming: \(message.id)")
+    ///     case .delta(let delta):
+    ///         print(delta.text ?? "", terminator: "")
+    ///     case .stop:
+    ///         print("\nComplete")
+    ///     case .error(let error):
+    ///         print("Error: \(error)")
+    ///     default:
+    ///         break
+    ///     }
+    /// }
+    ///
+    /// // Collecting streamed response
+    /// var fullResponse = ""
+    /// let stream = try await client.createStreamingMessage(request)
+    /// for await event in stream {
+    ///     if case .delta(let delta) = event {
+    ///         fullResponse += delta.text ?? ""
+    ///     }
+    /// }
+    /// ```
+    ///
+    /// ## Cancellation
+    ///
+    /// ```swift
+    /// let task = Task {
+    ///     let stream = try await client.createStreamingMessage(request)
+    ///     for await event in stream {
+    ///         try Task.checkCancellation()
+    ///         // Process event
+    ///     }
+    /// }
+    ///
+    /// // Cancel the stream
+    /// task.cancel()
+    /// ```
+    ///
+    /// - Note: The stream automatically handles connection management and error recovery.
     public func createStreamingMessage(_ request: MessageRequest) async throws -> AsyncThrowingStream<StreamEvent, Error> {
         let url = configuration.baseURL.appendingPathComponent("/v1/messages")
         var modifiedRequest = request

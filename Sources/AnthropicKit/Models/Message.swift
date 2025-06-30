@@ -1,14 +1,80 @@
 import Foundation
 
-/// A message in a conversation.
+/// Represents a message in a conversation with Claude.
+///
+/// Messages form the core of interactions with the Claude API. Each message has a role
+/// (user, assistant, or system) and content that can be text, images, or tool-related blocks.
+///
+/// ## Creating Messages
+///
+/// ```swift
+/// // Simple text message
+/// let userMessage = Message.text("Hello, Claude!", role: .user)
+///
+/// // Message with image
+/// let imageData = try Data(contentsOf: imageURL)
+/// let message = Message(
+///     role: .user,
+///     content: .blocks([
+///         ContentBlock(type: .text, text: "What's in this image?"),
+///         ContentBlock(
+///             type: .image,
+///             source: ImageSource(
+///                 mediaType: "image/jpeg",
+///                 data: imageData.base64EncodedString()
+///             )
+///         )
+///     ])
+/// )
+///
+/// // System message for context
+/// let systemMessage = Message(
+///     role: .system,
+///     content: .text("You are a helpful coding assistant specializing in Swift.")
+/// )
+/// ```
+///
+/// ## Building Conversations
+///
+/// ```swift
+/// var messages: [Message] = []
+///
+/// // Add system context
+/// messages.append(Message(
+///     role: .system,
+///     content: .text("You are a creative writing assistant.")
+/// ))
+///
+/// // Add user message
+/// messages.append(Message.text("Write a haiku about coding", role: .user))
+///
+/// // Get response and add to conversation
+/// let response = try await client.createMessage(
+///     MessageRequest(model: "claude-opus-4-20250514", maxTokens: 1024, messages: messages)
+/// )
+///
+/// if let assistantMessage = response.asMessage {
+///     messages.append(assistantMessage)
+/// }
+/// ```
 public struct Message: Codable, Equatable, Sendable {
     /// The role of the message sender.
+    ///
+    /// - `.user`: Messages from the human user
+    /// - `.assistant`: Messages from Claude
+    /// - `.system`: System messages that set context or behavior
     public let role: Role
     
     /// The content of the message.
+    ///
+    /// Content can be:
+    /// - Simple text: `.text("Hello")`
+    /// - Complex blocks: `.blocks([...])` for images, tool use, etc.
     public let content: Content
     
     /// The name of the sender (optional).
+    ///
+    /// Useful for multi-user conversations or role-playing scenarios.
     public let name: String?
     
     /// Creates a new message.
@@ -23,25 +89,87 @@ public struct Message: Codable, Equatable, Sendable {
     }
     
     /// Creates a simple text message.
+    ///
+    /// This is a convenience method for the most common use case of creating
+    /// plain text messages without images or tool interactions.
+    ///
     /// - Parameters:
-    ///   - role: The role of the message sender.
     ///   - text: The text content of the message.
+    ///   - role: The role of the message sender.
     /// - Returns: A new message with text content.
+    ///
+    /// ## Example
+    ///
+    /// ```swift
+    /// let userMessage = Message.text("What is machine learning?", role: .user)
+    /// let assistantMessage = Message.text("Machine learning is...", role: .assistant)
+    /// ```
     public static func text(_ text: String, role: Role) -> Message {
         Message(role: role, content: .text(text))
     }
 }
 
-/// The role of a message sender.
+/// The role of a message sender in a conversation.
+///
+/// Roles determine how Claude interprets and responds to messages:
+///
+/// - `.user`: Input from the human user. Claude will respond to these messages.
+/// - `.assistant`: Previous responses from Claude. Include these to maintain conversation context.
+/// - `.system`: Instructions that guide Claude's behavior and responses.
+///
+/// ## Example
+///
+/// ```swift
+/// let messages = [
+///     Message(role: .system, content: .text("You are a helpful math tutor.")),
+///     Message(role: .user, content: .text("What is 2+2?")),
+///     Message(role: .assistant, content: .text("2+2 equals 4.")),
+///     Message(role: .user, content: .text("Why?"))
+/// ]
+/// ```
 public enum Role: String, Codable, Equatable, Sendable {
+    /// Messages from the human user
     case user
+    /// Messages from Claude (the AI assistant)
     case assistant
+    /// System messages that set context or behavior
     case system
 }
 
-/// The content of a message.
+/// The content of a message, which can be simple text or complex content blocks.
+///
+/// Content supports two formats:
+/// - `.text`: Simple string content for basic text messages
+/// - `.blocks`: Array of content blocks for rich content (images, tool use, etc.)
+///
+/// ## Examples
+///
+/// ```swift
+/// // Simple text
+/// let textContent = Content.text("Hello, Claude!")
+///
+/// // Multiple content blocks
+/// let richContent = Content.blocks([
+///     ContentBlock(type: .text, text: "Analyze this image:"),
+///     ContentBlock(
+///         type: .image,
+///         source: ImageSource(mediaType: "image/png", data: imageBase64)
+///     )
+/// ])
+///
+/// // Tool use result
+/// let toolContent = Content.blocks([
+///     ContentBlock(
+///         type: .toolResult,
+///         toolUseId: "tool_123",
+///         content: .text("Weather: 72°F, sunny")
+///     )
+/// ])
+/// ```
 public enum Content: Codable, Equatable, Sendable {
+    /// Simple text content
     case text(String)
+    /// Array of content blocks for rich content
     case blocks([ContentBlock])
     
     public func encode(to encoder: Encoder) throws {
@@ -109,7 +237,36 @@ public enum ContentBlockType: String, Codable, Equatable, Sendable {
     case toolResult = "tool_result"
 }
 
-/// Image source for image content blocks.
+/// Represents image data for image content blocks.
+///
+/// Images must be base64-encoded and include their media type.
+/// Supported formats include JPEG, PNG, GIF, and WebP.
+///
+/// ## Example
+///
+/// ```swift
+/// // Load and encode an image
+/// let imageData = try Data(contentsOf: imageURL)
+/// let imageSource = ImageSource(
+///     mediaType: "image/jpeg",
+///     data: imageData.base64EncodedString()
+/// )
+///
+/// // Create message with image
+/// let message = Message(
+///     role: .user,
+///     content: .blocks([
+///         ContentBlock(type: .text, text: "What's in this image?"),
+///         ContentBlock(type: .image, source: imageSource)
+///     ])
+/// )
+/// ```
+///
+/// ## Size Limits
+///
+/// - Maximum image size: 5MB
+/// - Supported formats: JPEG, PNG, GIF, WebP
+/// - Images are automatically resized if needed
 public struct ImageSource: Codable, Equatable, Sendable {
     /// The type of image source.
     public let type: String
@@ -127,9 +284,29 @@ public struct ImageSource: Codable, Equatable, Sendable {
     }
     
     /// Creates a new image source.
+    ///
     /// - Parameters:
-    ///   - mediaType: The media type (e.g., "image/jpeg", "image/png").
+    ///   - mediaType: The MIME type of the image (e.g., "image/jpeg", "image/png", "image/gif", "image/webp").
     ///   - data: The base64-encoded image data.
+    ///
+    /// ## Example
+    ///
+    /// ```swift
+    /// // From file
+    /// let imageData = try Data(contentsOf: URL(fileURLWithPath: "photo.jpg"))
+    /// let source = ImageSource(
+    ///     mediaType: "image/jpeg",
+    ///     data: imageData.base64EncodedString()
+    /// )
+    ///
+    /// // From UIImage (iOS)
+    /// if let jpegData = uiImage.jpegData(compressionQuality: 0.8) {
+    ///     let source = ImageSource(
+    ///         mediaType: "image/jpeg",
+    ///         data: jpegData.base64EncodedString()
+    ///     )
+    /// }
+    /// ```
     public init(mediaType: String, data: String) {
         self.type = "base64"
         self.mediaType = mediaType
