@@ -2,7 +2,7 @@
 
 [![Swift](https://img.shields.io/badge/Swift-5.9-orange.svg)](https://swift.org)
 [![Platforms](https://img.shields.io/badge/Platforms-macOS%20%7C%20iOS%20%7C%20tvOS%20%7C%20watchOS%20%7C%20visionOS%20%7C%20Linux-blue)](https://swift.org)
-[![CI](https://github.com/marcusziade/AnthropicKit/workflows/CI/badge.svg)](https://github.com/marcusziade/AnthropicKit/actions)
+[![CI](https://github.com/guitaripod/AnthropicKit/workflows/CI/badge.svg)](https://github.com/guitaripod/AnthropicKit/actions)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Swift SDK for the Anthropic API with full Linux support and streaming capabilities.
@@ -13,7 +13,7 @@ Add to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/marcusziade/AnthropicKit.git", from: "1.0.0")
+    .package(url: "https://github.com/guitaripod/AnthropicKit.git", from: "1.0.0")
 ]
 ```
 

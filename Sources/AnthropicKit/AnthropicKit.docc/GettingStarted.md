@@ -12,7 +12,7 @@ AnthropicKit supports Swift Package Manager for easy integration. Choose one of 
 
 1. Open your project in Xcode
 2. Go to **File > Add Package Dependencies**
-3. Enter the repository URL: `https://github.com/marcusziade/AnthropicKit.git`
+3. Enter the repository URL: `https://github.com/guitaripod/AnthropicKit.git`
 4. Choose your version requirements (we recommend "Up to Next Major Version")
 5. Click **Add Package**
 
@@ -22,7 +22,7 @@ Add AnthropicKit to your `Package.swift` file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/marcusziade/AnthropicKit.git", from: "1.0.0")
+    .package(url: "https://github.com/guitaripod/AnthropicKit.git", from: "1.0.0")
 ]
 ```
 
@@ -305,7 +305,7 @@ let messages = [
 
 ## Need Help?
 
-- 📚 Browse the [full documentation](https://swiftpackageindex.com/marcusziade/AnthropicKit/documentation)
-- 💬 Join the community discussions on [GitHub](https://github.com/marcusziade/AnthropicKit/discussions)
-- 🐛 Report issues on our [issue tracker](https://github.com/marcusziade/AnthropicKit/issues)
+- 📚 Browse the [full documentation](https://swiftpackageindex.com/guitaripod/AnthropicKit/documentation)
+- 💬 Join the community discussions on [GitHub](https://github.com/guitaripod/AnthropicKit/discussions)
+- 🐛 Report issues on our [issue tracker](https://github.com/guitaripod/AnthropicKit/issues)
 - 📧 Contact Anthropic support for API-related questions
